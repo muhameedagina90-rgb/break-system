@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة فترات الراحة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff7800;
+            --secondary: #2d3e50;
+            --light: #f5f5f5;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --info: #3498db;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header design */
+        header {
+            background: linear-gradient(to right, var(--primary), #ff9900);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo i {
+            margin-left: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-left: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #e56700;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        /* Login design */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, var(--primary), #ff9900);
+            padding: 20px;
+        }
+
+        .login-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        .coffee-icon {
+            font-size: 60px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .forgot-password {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Dashboard design */
+        .dashboard {
+            padding: 30px 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+            color: var(--secondary);
+        }
+
+        .status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .status-card h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+
+        .employee-list {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .employee-list h3 {
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+
+        .status-break {
+            background-color: #ffecb3;
+            color: var(--warning);
+        }
+
+        .status-emergency {
+            background-color: #ffcdd2;
+            color: var(--danger);
+        }
+
+        .status-waiting {
+            background-color: #e3f2fd;
+            color: var(--info);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        /* Queue design */
+        .queue-info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .queue-list {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .queue-list h3 {
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .queue-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Modal design */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            color: var(--secondary);
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .status-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+            
+            .user-actions {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 10px;
+            }
+        }
+
+        .online-notice {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="login-form">
+            <div class="coffee-icon">
+                <i class="fas fa-coffee"></i>
+            </div>
+            <h2>تسجيل الدخول</h2>
+            <div class="form-group">
+                <label for="username">اسم المستخدم</label>
+                <input type="text" id="username" class="form-control" placeholder="أدخل اسم المستخدم">
+            </div>
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور">
+            </div>
+            <div class="forgot-password">
+                <a href="#" id="forgotPasswordLink">نسيت كلمة المرور؟</a>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" id="loginBtn">تسجيل الدخول</button>
+        </div>
+    </div>
+
+    <!-- Main Page -->
+    <div id="mainPage" style="display: none;">
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-coffee"></i>
+                        <span>نظام إدارة فترات الراحة</span>
+                    </div>
+                    <div class="user-actions">
+                        <span id="userWelcome">مرحباً، محمد</span>
+                        <button class="btn btn-danger" id="logoutBtn">تسجيل الخروج</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard container">
+            <div class="online-notice">
+                <i class="fas fa-globe"></i> هذا النظام يعمل محلياً على جهازك. لجعله متاحاً للجميع، يرجى استضافته على GitHub Pages أو Netlify.
+            </div>
+
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">لوحة التحكم</h2>
+                <div>الوقت الحالي: <span id="currentTime">12:30:45</span></div>
+            </div>
+
+            <div class="status-cards">
+                <div class="status-card">
+                    <h3>حالة الموظفين</h3>
+                    <div style="font-size: 24px; margin-bottom: 10px;">
+                        <span style="color: var(--success);" id="availableCount">12 متاح</span>
+                    </div>
+                    <div style="font-size: 24px; margin-bottom: 10px;">
+                        <span style="color: var(--warning);" id="breakCount">3 في راحة</span>
+                    </div>
+                    <div style="font-size: 24px; margin-bottom: 10px;">
+                        <span style="color: var(--danger);" id="emergencyCount">1 حالة طارئة</span>
+                    </div>
+                    <div style="font-size: 24px;">
+                        <span style="color: var(--info);" id="waitingCount">2 في قائمة الانتظار</span>
+                    </div>
+                </div>
+
+                <div class="status-card">
+                    <h3>الفترات النشطة</h3>
+                    <div style="font-size: 24px; margin-bottom: 10px;">
+                        <span style="color: var(--warning);">3 فترات راحة</span>
+                    </div>
+                    <div style="font-size: 24px;">
+                        <span style="color: var(--danger);">1 فترة طارئة</span>
+                    </div>
+                </div>
+
+                <div class="status-card">
+                    <h3>الإحصائيات</h3>
+                    <div style="font-size: 24px; margin-bottom: 10px;">
+                        <span>16 موظف</span>
+                    </div>
+                    <div style="font-size: 24px;">
+                        <span>4 فترات نشطة</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="queue-info" id="queueInfo" style="display: none;">
+                <p>أنت في قائمة الانتظار للراحة. موقعك: <span id="queuePosition">1</span></p>
+            </div>
+
+            <div class="queue-list" id="queueList" style="display: none;">
+                <h3>قائمة الانتظار للراحة</h3>
+                <div id="queueItems">
+                    <!-- Will be filled with queue items -->
+                </div>
+            </div>
+
+            <div class="employee-list">
+                <h3>قائمة الموظفين</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم الموظف</th>
+                            <th>اسم المستخدم</th>
+                            <th>الحالة</th>
+                            <th>وقت البدء</th>
+                            <th>المدة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTableBody">
+                        <!-- Will be filled with data -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="breakBtn">
+                    <i class="fas fa-coffee"></i> بدء الراحة
+                </button>
+                <button class="btn btn-danger" id="emergencyBtn">
+                    <i class="fas fa-exclamation-circle"></i> راحة طارئة
+                </button>
+                <button class="btn btn-success" id="endBreakBtn" style="display: none;">
+                    <i class="fas fa-check-circle"></i> إنهاء الراحة
+                </button>
+                <button class="btn btn-warning" id="cancelQueueBtn" style="display: none;">
+                    <i class="fas fa-times-circle"></i> إلغاء الانتظار
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">تأكيد تسجيل الخروج</h3>
+                <span class="close">&times;</span>
+            </div>
+            <p>هل أنت متأكد من أنك تريد تسجيل الخروج؟</p>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="cancelLogout">إلغاء</button>
+                <button class="btn btn-danger" id="confirmLogout">تسجيل الخروج</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">استعادة كلمة المرور</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="recoveryEmail">البريد الإلكتروني</label>
+                <input type="email" id="recoveryEmail" class="form-control" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+            <p>سيتم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني.</p>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="cancelRecovery">إلغاء</button>
+                <button class="btn btn-success" id="sendRecovery">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Employees data - stored in localStorage
+        function getEmployees() {
+            let employees = JSON.parse(localStorage.getItem('breakSystemEmployees'));
+            
+            if (!employees) {
+                // Initial data
+                employees = [
+                    { id: 1, name: "راشد ضياء", username: "rashad.diaa", password: "emp123", status: "available", breakStart: null },
+                    { id: 2, name: "محمد حمدي", username: "mohamed.hamdy", password: "emp123", status: "break", breakStart: new Date(Date.now() - 15*60000).toISOString() },
+                    { id: 3, name: "سيد وجدي", username: "sayed.wagdy", password: "emp123", status: "emergency", breakStart: new Date(Date.now() - 25*60000).toISOString() },
+                    { id: 4, name: "أحمد عبد اللطيف", username: "ahmed.ellatef", password: "emp123", status: "available", breakStart: null },
+                    { id: 5, name: "الغني كرم", username: "elghany.karam", password: "emp123", status: "break", breakStart: new Date(Date.now() - 10*60000).toISOString() },
+                    { id: 6, name: "حسين جمال", username: "hussien.gamal", password: "emp123", status: "available", breakStart: null },
+                    { id: 7, name: "محمد سعد", username: "mohamed.saad", password: "emp123", status: "available", breakStart: null },
+                    { id: 8, name: "عباد سامي", username: "abbad.samy", password: "emp123", status: "available", breakStart: null },
+                    { id: 9, name: "عمرو يوسف", username: "amr.yousif", password: "emp123", status: "available", breakStart: null },
+                    { id: 10, name: "محمد عبود", username: "mohamed.aboud", password: "emp123", status: "available", breakStart: null },
+                    { id: 11, name: "مدير النظام", username: "admin", password: "admin123", status: "available", breakStart: null, isAdmin: true }
+                ];
+                localStorage.setItem('breakSystemEmployees', JSON.stringify(employees));
+            }
+            
+            return employees;
+        }
+
+        function saveEmployees(employees) {
+            localStorage.setItem('breakSystemEmployees', JSON.stringify(employees));
+        }
+
+        // Break queue - stored in localStorage
+        function getBreakQueue() {
+            let queue = JSON.parse(localStorage.getItem('breakSystemQueue'));
+            return queue || [];
+        }
+
+        function saveBreakQueue(queue) {
+            localStorage.setItem('breakSystemQueue', JSON.stringify(queue));
+        }
+
+        // Current user state
+        let currentUser = null;
+
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const mainPage = document.getElementById('mainPage');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const breakBtn = document.getElementById('breakBtn');
+        const emergencyBtn = document.getElementById('emergencyBtn');
+        const endBreakBtn = document.getElementById('endBreakBtn');
+        const cancelQueueBtn = document.getElementById('cancelQueueBtn');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const logoutModal = document.getElementById('logoutModal');
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        const cancelLogout = document.getElementById('cancelLogout');
+        const confirmLogout = document.getElementById('confirmLogout');
+        const cancelRecovery = document.getElementById('cancelRecovery');
+        const sendRecovery = document.getElementById('sendRecovery');
+        const currentTimeElement = document.getElementById('currentTime');
+        const userWelcome = document.getElementById('userWelcome');
+        const employeesTableBody = document.getElementById('employeesTableBody');
+        const availableCount = document.getElementById('availableCount');
+        const breakCount = document.getElementById('breakCount');
+        const emergencyCount = document.getElementById('emergencyCount');
+        const waitingCount = document.getElementById('waitingCount');
+        const queueInfo = document.getElementById('queueInfo');
+        const queuePosition = document.getElementById('queuePosition');
+        const queueList = document.getElementById('queueList');
+        const queueItems = document.getElementById('queueItems');
+
+        // Update current time
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-EG');
+            currentTimeElement.textContent = timeString;
+        }
+
+        // Update time every second
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+
+        // Update break queue display
+        function updateBreakQueueDisplay() {
+            const breakQueue = getBreakQueue();
+            const employees = getEmployees();
+            
+            // Update waiting count
+            const waiting = breakQueue.length;
+            waitingCount.textContent = `${waiting} في قائمة الانتظار`;
+            
+            // Update queue info for current user
+            if (currentUser && breakQueue.includes(currentUser.id)) {
+                const position = breakQueue.indexOf(currentUser.id) + 1;
+                queuePosition.textContent = position;
+                queueInfo.style.display = 'block';
+                cancelQueueBtn.style.display = 'inline-flex';
+            } else {
+                queueInfo.style.display = 'none';
+                cancelQueueBtn.style.display = 'none';
+            }
+            
+            // Update queue list
+            if (breakQueue.length > 0) {
+                queueList.style.display = 'block';
+                queueItems.innerHTML = '';
+                
+                breakQueue.forEach((userId, index) => {
+                    const employee = employees.find(emp => emp.id === userId);
+                    if (employee) {
+                        const queueItem = document.createElement('div');
+                        queueItem.className = 'queue-item';
+                        queueItem.innerHTML = `
+                            <span>${index + 1}. ${employee.name}</span>
+                            <span>في انتظار الراحة</span>
+                        `;
+                        queueItems.appendChild(queueItem);
+                    }
+                });
+            } else {
+                queueList.style.display = 'none';
+            }
+        }
+
+        // Update employees status
+        function updateEmployeesStatus() {
+            const employees = getEmployees();
+            const breakQueue = getBreakQueue();
+            
+            // Count employees in each status
+            const available = employees.filter(emp => emp.status === 'available').length;
+            const onBreak = employees.filter(emp => emp.status === 'break').length;
+            const emergency = employees.filter(emp => emp.status === 'emergency').length;
+            
+            availableCount.textContent = `${available} متاح`;
+            breakCount.textContent = `${onBreak} في راحة`;
+            emergencyCount.textContent = `${emergency} حالة طارئة`;
+            
+            // Update table
+            employeesTableBody.innerHTML = '';
+            employees.forEach(employee => {
+                const row = document.createElement('tr');
+                
+                // Calculate duration if on break
+                let duration = '-';
+                if (employee.breakStart) {
+                    const breakStart = new Date(employee.breakStart);
+                    const diff = Math.floor((new Date() - breakStart) / 60000);
+                    duration = `${diff} دقائق`;
+                }
+                
+                // Determine status badge
+                let statusBadge = '';
+                if (employee.status === 'available') {
+                    statusBadge = '<span class="status-badge status-available">متاح</span>';
+                } else if (employee.status === 'break') {
+                    statusBadge = '<span class="status-badge status-break">في راحة</span>';
+                } else if (employee.status === 'emergency') {
+                    statusBadge = '<span class="status-badge status-emergency">طارئة</span>';
+                } else if (employee.status === 'waiting') {
+                    statusBadge = '<span class="status-badge status-waiting">في الانتظار</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${employee.name}</td>
+                    <td>${employee.username}</td>
+                    <td>${statusBadge}</td>
+                    <td>${employee.breakStart ? new Date(employee.breakStart).toLocaleTimeString('ar-EG') : '-'}</td>
+                    <td>${duration}</td>
+                `;
+                
+                employeesTableBody.appendChild(row);
+            });
+            
+            // Update control buttons for current user
+            if (currentUser) {
+                const user = employees.find(emp => emp.id === currentUser.id);
+                if (user.status === 'available' && !breakQueue.includes(user.id)) {
+                    breakBtn.style.display = 'inline-flex';
+                    emergencyBtn.style.display = 'inline-flex';
+                    endBreakBtn.style.display = 'none';
+                    cancelQueueBtn.style.display = 'none';
+                } else if (user.status === 'break' || user.status === 'emergency') {
+                    breakBtn.style.display = 'none';
+                    emergencyBtn.style.display = 'none';
+                    endBreakBtn.style.display = 'inline-flex';
+                    cancelQueueBtn.style.display = 'none';
+                }
+            }
+            
+            // Update queue display
+            updateBreakQueueDisplay();
+        }
+
+        // Start break for next person in queue
+        function startNextInQueue() {
+            const breakQueue = getBreakQueue();
+            if (breakQueue.length > 0) {
+                const nextUserId = breakQueue[0];
+                const employees = getEmployees();
+                const nextUser = employees.find(emp => emp.id === nextUserId);
+                
+                if (nextUser && nextUser.status === 'available') {
+                    nextUser.status = 'break';
+                    nextUser.breakStart = new Date().toISOString();
+                    
+                    // Remove from queue
+                    breakQueue.shift();
+                    
+                    saveEmployees(employees);
+                    saveBreakQueue(breakQueue);
+                    
+                    alert(`بدأت راحة ${nextUser.name} تلقائياً بعد انتهاء الراحة السابقة`);
+                    updateEmployeesStatus();
+                } else {
+                    // If next user is not available, remove from queue and try the next one
+                    breakQueue.shift();
+                    saveBreakQueue(breakQueue);
+                    startNextInQueue();
+                }
+            }
+        }
+
+        // Login
+        loginBtn.addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username && password) {
+                const employees = getEmployees();
+                const user = employees.find(emp => emp.username === username && emp.password === password);
+                
+                if (user) {
+                    currentUser = user;
+                    loginPage.style.display = 'none';
+                    mainPage.style.display = 'block';
+                    userWelcome.textContent = `مرحباً، ${user.name}`;
+                    updateEmployeesStatus();
+                } else {
+                    alert('اسم المستخدم أو كلمة المرور غير صحيحة');
+                }
+            } else {
+                alert('يرجى إدخال اسم المستخدم وكلمة المرور');
+            }
+        });
+
+        // Show logout modal
+        logoutBtn.addEventListener('click', function() {
+            logoutModal.style.display = 'flex';
+        });
+
+        // Close logout modal
+        cancelLogout.addEventListener('click', function() {
+            logoutModal.style.display = 'none';
+        });
+
+        // Confirm logout
+        confirmLogout.addEventListener('click', function() {
+            // Remove user from queue if they are in it
+            const breakQueue = getBreakQueue();
+            if (breakQueue.includes(currentUser.id)) {
+                const index = breakQueue.indexOf(currentUser.id);
+                breakQueue.splice(index, 1);
+                saveBreakQueue(breakQueue);
+            }
+            
+            logoutModal.style.display = 'none';
+            mainPage.style.display = 'none';
+            loginPage.style.display = 'flex';
+            currentUser = null;
+            
+            // Reset login fields
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        });
+
+        // Show forgot password modal
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            forgotPasswordModal.style.display = 'flex';
+        });
+
+        // Close forgot password modal
+        cancelRecovery.addEventListener('click', function() {
+            forgotPasswordModal.style.display = 'none';
+        });
+
+        // Send password recovery
+        sendRecovery.addEventListener('click', function() {
+            const email = document.getElementById('recoveryEmail').value;
+            if (email) {
+                alert('تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني');
+                forgotPasswordModal.style.display = 'none';
+            } else {
+                alert('يرجى إدخال عنوان البريد الإلكتروني');
+            }
+        });
+
+        // Start break
+        breakBtn.addEventListener('click', function() {
+            if (currentUser) {
+                const employees = getEmployees();
+                const user = employees.find(emp => emp.id === currentUser.id);
+                
+                // Check if user already has an active break
+                if (user.status !== 'available') {
+                    alert('لديك بالفعل راحة نشطة');
+                    return;
+                }
+                
+                // Check if there's already an active break
+                const activeBreaks = employees.filter(emp => emp.status === 'break');
+                if (activeBreaks.length > 0) {
+                    // Add to queue
+                    const breakQueue = getBreakQueue();
+                    if (!breakQueue.includes(user.id)) {
+                        breakQueue.push(user.id);
+                        saveBreakQueue(breakQueue);
+                        alert('تم إضافتك إلى قائمة الانتظار للراحة. سيتم بدء راحتك تلقائياً عندما يحين دورك.');
+                        updateEmployeesStatus();
+                    }
+                    return;
+                }
+                
+                user.status = 'break';
+                user.breakStart = new Date().toISOString();
+                saveEmployees(employees);
+                updateEmployeesStatus();
+                alert('بدأت الراحة بنجاح');
+            }
+        });
+
+        // Start emergency break
+        emergencyBtn.addEventListener('click', function() {
+            if (currentUser) {
+                const employees = getEmployees();
+                const user = employees.find(emp => emp.id === currentUser.id);
+                
+                // Check if user already has an active break
+                if (user.status !== 'available') {
+                    alert('لديك بالفعل راحة نشطة');
+                    return;
+                }
+                
+                // Check if there's already an active emergency break
+                const activeEmergencies = employees.filter(emp => emp.status === 'emergency');
+                if (activeEmergencies.length > 0) {
+                    alert('لا يمكن بدء راحة طارئة. هناك بالفعل راحة طارئة نشطة.');
+                    return;
+                }
+                
+                user.status = 'emergency';
+                user.breakStart = new Date().toISOString();
+                saveEmployees(employees);
+                updateEmployeesStatus();
+                alert('بدأت الراحة الطارئة بنجاح');
+            }
+        });
+
+        // End break
+        endBreakBtn.addEventListener('click', function() {
+            if (currentUser) {
+                const employees = getEmployees();
+                const user = employees.find(emp => emp.id === currentUser.id);
+                
+                user.status = 'available';
+                user.breakStart = null;
+                saveEmployees(employees);
+                updateEmployeesStatus();
+                alert('انتهت الراحة بنجاح');
+                
+                // Start next person in queue if this was a regular break
+                startNextInQueue();
+            }
+        });
+
+        // Cancel queue
+        cancelQueueBtn.addEventListener('click', function() {
+            if (currentUser) {
+                const breakQueue = getBreakQueue();
+                if (breakQueue.includes(currentUser.id)) {
+                    const index = breakQueue.indexOf(currentUser.id);
+                    breakQueue.splice(index, 1);
+                    saveBreakQueue(breakQueue);
+                    updateEmployeesStatus();
+                    alert('تم إلغاء الانتظار في قائمة الراحة');
+                }
+            }
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === logoutModal) {
+                logoutModal.style.display = 'none';
+            }
+            if (e.target === forgotPasswordModal) {
+                forgotPasswordModal.style.display = 'none';
+            }
+        });
+
+        // Initial setup
+        updateEmployeesStatus();
+
+        // Auto-refresh every 10 seconds to simulate real-time updates
+        setInterval(updateEmployeesStatus, 10000);
+    </script>
+</body>
+</html>
